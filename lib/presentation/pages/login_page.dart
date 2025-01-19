@@ -1,53 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/auth_bloc.dart';
+import '../../application/blocs/auth_bloc.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar: AppBar(title: const Text('Login')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
               controller: usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is AuthSuccess) {
                   Navigator.pushReplacementNamed(context, '/home');
                 } else if (state is AuthFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.error)),
+                    SnackBar(content: Text('Error: ${state.message}')),
                   );
                 }
               },
               builder: (context, state) {
                 if (state is AuthLoading) {
-                  return CircularProgressIndicator();
+                  return const Center(child: CircularProgressIndicator());
                 }
+
                 return ElevatedButton(
                   onPressed: () {
-                    context.read<AuthBloc>().add(
-                          LoginEvent(
-                            usernameController.text,
-                            passwordController.text,
-                          ),
-                        );
+                    final username = usernameController.text;
+                    final password = passwordController.text;
+
+                    context
+                        .read<AuthBloc>()
+                        .add(LoginEvent(username, password));
                   },
-                  child: Text('Login'),
+                  child: const Text('Login'),
                 );
               },
             ),

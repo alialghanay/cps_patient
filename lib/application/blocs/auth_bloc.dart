@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:cps_patient/application/usecase/login_usecase.dart';
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/user.dart';
-import '../../domain/usecases/login_usecase.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -13,10 +13,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginEvent>((event, emit) async {
       emit(AuthLoading());
       try {
-        final user = await loginUseCase.execute(event.username, event.password);
+        final user = await loginUseCase(event.username, event.password);
         emit(AuthSuccess(user));
-      } catch (e) {
-        emit(AuthFailure(e.toString()));
+      } catch (error) {
+        emit(AuthFailure(error.toString()));
       }
     });
   }
