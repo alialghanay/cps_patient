@@ -1,15 +1,15 @@
-import 'package:cps_patient/application/blocs/pdf_bloc.dart';
-import 'package:cps_patient/application/blocs/report_bloc.dart';
+import 'package:cps_patient/domain/login_domain/login_repostry_impl.dart';
+import 'package:cps_patient/presentation/login/cubit/login_cubit.dart';
+import 'package:cps_patient/presentation/login/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'core/injection_container.dart';
-import 'application/blocs/auth_bloc.dart';
-import 'presentation/pages/home_page.dart';
-import 'presentation/pages/login_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:cps_patient/presentation/styles/theme.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() {
-  configureDependencies();
-  runApp(MyApp());
+void main() async {
+  await dotenv.load(fileName: ".env");
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,19 +17,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => getIt<AuthBloc>()),
-        BlocProvider<ReportBloc>(create: (_) => getIt<ReportBloc>()),
-        BlocProvider(create: (_) => getIt<PdfBloc>()),
-      ],
+    return BlocProvider(
+      create: (BuildContext context) {
+        return LoginCubit(LoginRepositoryImpl());
+      },
       child: MaterialApp(
-        title: 'نظام علم الأمراض',
-        routes: {
-          '/': (context) => LoginPage(),
-          '/home': (context) => HomePage(),
-        },
-        initialRoute: '/',
+        title: 'CPS Patient App',
+        theme: AppTheme.themeData,
+        locale: const Locale('ar'),
+        supportedLocales: const [
+          Locale('ar'),
+          Locale('en'),
+        ],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: const LoginScreen(),
       ),
     );
   }
