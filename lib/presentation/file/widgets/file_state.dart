@@ -4,8 +4,7 @@ import 'package:cps_patient/models/file_model.dart'; // Import the `FileStatus` 
 class FileStateWidget extends StatelessWidget {
   final FileStatus currentState;
 
-  const FileStateWidget({Key? key, required this.currentState})
-      : super(key: key);
+  const FileStateWidget({super.key, required this.currentState});
 
   /// Helper to determine the step color:
   /// - **Completed & Active Steps** → Blue
